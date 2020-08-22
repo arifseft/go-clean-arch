@@ -1,32 +1,47 @@
-version: "2.3"
-services:
-  web:
-    build:
+version: '3.7'
+
+services: 
+  app:
+    hostname: karir_consulting_development
+    container_name: karir_consulting_development
+    depends_on: 
+      - mysql
+    restart: unless-stopped
+    build: 
       context: .
       dockerfile: Dockerfile
-    container_name: article_management_api
+    environment: 
+      DEBUG: "true"
+      SERVING_PORT: "*:9090"
+      DB_HOST: karir_consulting_db
+    volumes: 
+      - ./config.json:/app/config.json
     ports:
       - 9090:9090
-    depends_on:
-      mysql:
-        condition: service_healthy
-    volumes:
-      - ./config.json:/app/config.json
+    tty: true
+    networks: 
+      - karir_consulting_development
 
   mysql:
-    image: mysql:5.7 
-    container_name: go_clean_arch_mysql
-    command: mysqld --user=root
+    image: mysql:5.7
+    container_name: karir_consulting_db
     volumes:
-      - ./article.sql:/docker-entrypoint-initdb.d/init.sql
+      # - karir_consulting:/var/libs/mysql/data
+      - karir_consulting:/usr/local/mysql/data
+      # - data:/usr/local/mysql/data
+    environment:
+      - MYSQL_ROOT_HOST=localhost
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=12345678
+      - MYSQL_DATABASE=article
+      - MYSQL_ROOT_PASSWORD=12345678
     ports:
       - 3306:3306
-    environment:
-      - MYSQL_DATABASE=article
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=password
-      - MYSQL_ROOT_PASSWORD=root
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 5s
-      retries: 10
+    networks:
+      - karir_consulting_development
+
+volumes: 
+  karir_consulting:
+
+networks:
+  karir_consulting_development:

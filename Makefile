@@ -2,9 +2,11 @@ BINARY=engine
 test: 
 	go test -v -cover -covermode=atomic ./...
 
+coverage:
+	go test -v -coverprofile=coverage.out ./... && go tool cover -html=coverage.out
+
 engine:
 	go build -o ${BINARY} app/*.go
-
 
 unittest:
 	go test -short  ./...
@@ -15,8 +17,11 @@ clean:
 docker:
 	docker build -t go-clean-arch .
 
-run:
-	docker-compose up --build -d
+build: stop
+	docker-compose up --build
+
+run: stop
+	docker-compose up
 
 stop:
 	docker-compose down
