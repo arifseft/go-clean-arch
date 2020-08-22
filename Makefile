@@ -33,4 +33,8 @@ lint-prepare:
 lint:
 	./bin/golangci-lint run ./...
 
+watch:
+	@air -c air.conf
+
+
 .PHONY: clean install unittest build docker run stop vendor lint-prepare lint

@@ -1,4 +1,5 @@
 vendor/
+tmp/
 article_clean
 _*
 *.test
